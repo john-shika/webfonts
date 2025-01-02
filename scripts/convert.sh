@@ -41,7 +41,9 @@ done <<< "$FONTS"
 EOF
 )
 
-echo -en | tee main.css
+OUTPUT_FILE="index.css"
+
+echo -en | tee $OUTPUT_FILE
 
 while IFS= read -r line; do
   DIR="$line"
@@ -52,6 +54,7 @@ while IFS= read -r line; do
   FONTS_REGULAR=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-regular\.')
   FONTS_LIGHT=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-light\.')
   FONTS_ITALIC=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-italic\.')
+  FONTS_OBLIQUE=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-oblique\.')
   FONTS_MEDIUM=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-medium\.')
   FONTS_BOLD=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-bold\.')
   FONTS_SEMIBOLD=$(find "$DIR" -type f | grep -Ei '\.(ttf|otf|woff2?|eot)$' | grep -i '\-semibold\.')
@@ -59,7 +62,7 @@ while IFS= read -r line; do
 
   if [ -n "$FONTS_REGULAR" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -74,7 +77,7 @@ EOF
 
   if [ -n "$FONTS_LIGHT" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -89,7 +92,7 @@ EOF
 
   if [ -n "$FONTS_ITALIC" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -102,9 +105,24 @@ cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
 EOF
   fi
 
+  if [ -n "$FONTS_OBLIQUE" ]; then
+
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
+
+@font-face {
+  font-family: '$NAME';
+  src: url('fonts/$NAME/$NAME-Oblique.woff2') format('woff2'),
+       url('fonts/$NAME/$NAME-Oblique.woff') format('woff'),
+       url('fonts/$NAME/$NAME-Oblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+EOF
+  fi
+
   if [ -n "$FONTS_MEDIUM" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -119,7 +137,7 @@ EOF
 
   if [ -n "$FONTS_BOLD" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -134,7 +152,7 @@ EOF
 
   if [ -n "$FONTS_SEMIBOLD" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -149,7 +167,7 @@ EOF
 
   if [ -n "$FONTS_THIN" ]; then
 
-cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a main.css
+cat << 'EOF' | sed -e "s/\$NAME/$NAME/g" | tee -a $OUTPUT_FILE
 
 @font-face {
   font-family: '$NAME';
@@ -164,4 +182,4 @@ EOF
   
 done <<< "$DIRS"
 
-cd "$CurrWorkDir"
+cd "$CurrWorkDir" || exit 1
